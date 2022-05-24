@@ -1,73 +1,38 @@
-import { Component } from 'react';
-
 import './app.css';
-import '../../bootstrap.css';
+
+import useGlobalSetState from '../../hooks/abstractState.hook'
 
 import Task from '../task/task';
-import Form from '../form/form';
+import Form from '../addTask/addTask';
 import Oauth from '../oauth/oauth';
+import Nav from '../navigation/nav';
 
-class App extends Component {
 
-    state = {
-        reload: false,
-        archive: false,
+const App = () => {
+    
+    const archive = useGlobalSetState(false);
+    const reload = useGlobalSetState(false);
+
+    const onLoading = (res) => {
+        reload.onChange(res);
     }
 
-    onLoading = (res) => {
-        this.setState ({
-            reload: res,
-        })
+    const onArchive = (res) => {
+        
+        reload.onChange(true);
+        archive.onChange(res);
     }
 
-    activeTasks = (e) => {
-        e.preventDefault();   
-        this.setState ({
-            archive: false,
-            reload: true,
-        })
-    }
-
-    archiveTasks = (e) => {
-        e.preventDefault();   
-        this.setState ({
-            archive: true,
-            reload: true,
-        })
-    }
-
-    render() {
-
-        return (
+    return (
             <div className="container">
-                <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <div className="container-fluid">
-                        <a className="navbar-brand" href="/">TODO</a>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li className="nav-item">
-                                    <a className="nav-link active" aria-current="page" href="#" onClick={this.activeTasks}>Актуальные задачи</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#" onClick={this.archiveTasks}>Выполненные задачи</a>
-                                </li>                        
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-
+                <Nav onArchive={onArchive}/>
                 <div className="container my-5">
                     <div className="row">
-                        <div className="col-12 col-lg-7">
-                           
+                        <div className="col-12 col-lg-7">                           
                                 <Task 
-                                reload={this.state.reload}
-                                archive={this.state.archive}
-                                onLoading={this.onLoading}/>                                
-    
+                                reload={reload.value}
+                                archive={archive.value}
+                                onLoading={onLoading}/>                               
                         </div>
                         <div className="col">
                             <div className="card mb-4">
@@ -75,25 +40,23 @@ class App extends Component {
                                     Постановка задачи
                                 </div>
                                 <div className="card-body">
-                                    <Form onLoading={this.onLoading}/>
+                                    <Form onLoading={onLoading}/>
                                 </div>
                             </div>    
                             <div className="card">
-                                
                                 <div className="card-header">
                                     Авторизация
                                 </div>
                                 <div className="card-body">
                                     <Oauth/>
-                                </div>
-                                
+                                </div> 
                             </div>    
                         </div>             
                     </div>
                 </div>
             </div>
-        );
-    }
+    );
+   
 }
 
 export default App;

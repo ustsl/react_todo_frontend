@@ -27,13 +27,13 @@ class Form extends Component {
         })
     }
     
-   
     onSubmit = (e) => {
         e.preventDefault();       
         this.todoApiObj.postTask(this.state.title, this.state.content)
         .then(this.cleanForm())
         .then(this.props.onLoading(true))        
         .catch(this.onError)
+
     }
 
     render() {

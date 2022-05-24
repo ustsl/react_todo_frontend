@@ -1,17 +1,9 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import './bootstrap.css'
 import App from './components/app/app';
 import reportWebVitals from './reportWebVitals';
-
-import todoApi from './services/todoApi';
-
-const todoApiObj = new todoApi();
-
-// todoApiObj.getTaskList().then(res => console.log(res))
-
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -9,7 +9,6 @@ class Oauth extends Component {
             login: '',
             password: '',
             token: '',
-            reload: false,
         }
     }
     
@@ -21,7 +20,7 @@ class Oauth extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.token !== prevState.token) {
-            this.getToken();
+            this.getToken()
         }
     }
 

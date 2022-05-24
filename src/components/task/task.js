@@ -1,110 +1,59 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
+import useGlobalSetState from '../../hooks/abstractState.hook'
 import todoApi from '../../services/todoApi';
 import Spinner from '../spinner/spinner';
 import Error from '../error/error';
 import './style.css';
 
-class Task extends Component {
+const Task = (props) => {
 
-    state = {
-        tasks: [],
-        loading: true,
-        reload: false,
-        errorMessage: false,
-        offset: 0,
-        previous: true,
-        next: true,
-        archive: false,
-    }
+    const tasks = useGlobalSetState([])
+    const loading = useGlobalSetState(true);
+    const errorMessage = useGlobalSetState(false);
+    const offset = useGlobalSetState(0);
+    const previous = useGlobalSetState (true);
+    const next = useGlobalSetState (true);
 
-    todoApiObj = new todoApi();
+    const todoApiObj = new todoApi();
+
+    useEffect(() => {
+        if (props.reload) {
+            offset.onChange(0);
+        }
+        onTodoLoading();
+    }, [offset.value, props.reload]);
     
-    componentDidMount() {
-        this.onTodoLoading();
+    
+    const onTodoListLoaded = (res) => {
+        tasks.onChange(res.results);
+        loading.onChange(false);
+        next.onChange(res.next == null);
+        previous.onChange(res.previous == null);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.archive !== this.state.archive) {
-            this.archiveUnarchive();
-          }
-        if (this.props.reload === true) {
-          this.offsetReload();
-        }
-        if (this.state.reload === true) {
-          this.onTodoLoading();
-        }
-
+    const onTodoLoading = () => {
+        loading.onChange(true);
+        todoApiObj.getTaskList(offset.value, props.archive)
+        .then(onTodoListLoaded)
+        .then(props.onLoading(false))
+        .catch(onError)
     }
 
-    onTodoLoading() {
-
-        this.props.onLoading(false);
-        this.onTodoReload();
-        this.todoApiObj.getTaskList(this.state.offset, this.state.archive)
-        .then(this.onTodoListLoaded)
-        .then(this.props.onLoading(false))
-        .catch(this.onError)
+    const onPagination = (newOffset) => {
+        offset.onChange(offset.value + newOffset);
     }
 
-
-    boolFunc = (elem) => {
-        if(elem) {
-            return
-        } 
-        return true
+    const onError = () => {
+        error.onChange(true);
     }
 
-    onTodoListLoaded = (res) => {
+    const renderItems = (arr) => {
 
-        this.setState({
-            tasks: res.results,
-            loading: false,
-            next: this.boolFunc(res.next),
-            previous: this.boolFunc(res.previous),
-        })
-    }
-
-    onTodoReload = () => {
-        this.setState({
-            loading:true,
-            reload: false,
-        })
-    }
-
-    onPagination = (offset) => {
-        this.setState({
-            offset: this.state.offset + offset,
-            reload: true
-        })
-    }
-
-    offsetReload = () => {
-        this.setState({
-            offset: 0,
-            reload: true,
-        })
-    }
-
-    archiveUnarchive = () => {
-        this.setState({
-            archive: this.props.archive
-        })
-    }
-
-    onError = () => {
-        this.setState({
-            errorMessage: true,
-            loading: false
-        })
-    }
-
-    renderItems(arr) {
         const items =  arr.map((item) => {  
 
             let content = item.content,
                 title = item.title,
                 email = item.get_mail; 
-
 
             function sliceFunc (obj, param) {
                 let data_obj = obj
@@ -140,29 +89,28 @@ class Task extends Component {
             </div>
         )
     }
-
-
    
-    render() {
-
-        const {tasks, loading, errorMessage, next, previous} = this.state;
-        const items = this.renderItems(tasks);
-        const spinner = loading ? <Spinner/> : null;
-        const error = errorMessage ? <Error/> : null;
-        const content = !(loading || error) ? items : null;
+        const items = renderItems(tasks.value);
+        const spinner = loading.value ? <Spinner/> : null;
+        const error = errorMessage.value ? <Error/> : null;
+        const content = !(loading.value || error) ? items : null;
 
         return (                
                 <>
                     {spinner}
                     {error}
                     {content}       
+                    
                     <div className="btn-group mb-4 pt-3 text-center mx-auto d-block">
-                      <button className="btn btn-primary" disabled = {previous} aria-current="page" onClick={() => this.onPagination(-3)} > &lt; Назад </button>
-                      <button className="btn btn-info" disabled = {next} onClick={() => this.onPagination(3)}> Вперед &gt; </button>
+                      <button className="btn btn-primary" disabled = {previous.value} aria-current="page"
+                       onClick={() => onPagination(-3)} > &lt; Назад </button>
+
+                      <button className="btn btn-info" disabled = {next.value} 
+                      onClick={() => onPagination(3)}> Вперед &gt; </button>
                     </div>                                       
                 </>      
         );
-    }
+
 }
 
 export default Task;
