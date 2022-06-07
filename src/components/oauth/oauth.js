@@ -1,100 +1,70 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import oauthApi from '../../services/oauthApi';
 
-class Oauth extends Component {
+const Oauth = () => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: '',
-            is_staff: false,
-            login: '',
-            password: '',
-            token: '',
-        }
-    }
+    const [email, setEmail] = useState('')
+    const [isStaff, setIsStaff] = useState(false)
+    const [login, setLogin] = useState('')
+    const [password, setPassword] = useState('')
+    const [token, setToken] = useState('')
+    const [formError, setFormError] = useState(null)
     
-    oauthObj = new oauthApi();
+    const oauthObj = new oauthApi();
 
-    componentDidMount() {
-        this.getToken();
-    }
+    useEffect(() => {
+        getToken()
+    }, []);
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.token !== prevState.token) {
-            this.getToken()
-        }
-    }
 
-    onValueChange = (e) => {
-        this.setState({
-            [e.target.name]:e.target.value
-        })
-        this.getToken()
-    }
-
-    cleanForm = () => {
-        this.setState({
-            login: '',
-            password: '',
-        })
+    const cleanForm = () => {
+        setLogin('')
+        setPassword('')
+        setToken('')
+        setFormError(null)
     }    
 
-    errorForm = () => {
-        this.setState({
-            login: 'Неправильная пара логин пароль',
-            password: '',
-        })
+    const errorForm = () => {
+        setFormError('Неправильная пара логин пароль')
+        setLogin('')
+        setPassword('')
+        setToken('')
     }    
    
-    onSubmit = (e) => {
+    const onSubmit = (e) => {
         e.preventDefault();    
-        this.oauthObj.credentialEntry(this.state.login, this.state.password)
-        .then(this.getToken)
-        .catch(this.errorForm)
+        oauthObj.credentialEntry(login, password)
+        .then(getToken)
+        .catch(errorForm)
     }
 
-    getToken = () => {
-        let token, login, email, is_staff;
-        if (localStorage.getItem('auth_token')) {
-            token = localStorage.getItem('auth_token')
-            login = localStorage.getItem('login')
-            email = localStorage.getItem('email')
-            is_staff = localStorage.getItem('is_staff')
-            this.setState({
-                token: token,
-                login: login,
-                email: email,
-                is_staff: is_staff
-            })
-        } 
+    const getToken = () => {
+        setToken(localStorage.getItem('auth_token'))
+        setLogin(localStorage.getItem('auth_token'))
+        setEmail(localStorage.getItem('email'))
+        setIsStaff(localStorage.getItem('is_staff'))
     }
 
-    onExit = () => {
-        localStorage.clear();
-        this.setState({
-            token: '',
-            login: '',
-            password: '',
-        })
+    const onExit = () => {
+        localStorage.clear()
+        cleanForm()
     }
 
 
-    renderAuth() {
+    const renderAuth = () => {
         
-        const {email, token, is_staff} = this.state;
 
         let userStatus = 'Пользователь'
-        if (is_staff) {
+        if (isStaff) {
             userStatus = 'Администратор'
         }
 
         if (token) {
              return (
-                 <>
-                <p className="small">Вы авторизованы, как {userStatus}</p><h2 className="mb-4">{email} </h2>
+                <>
+                <p className="small">Вы авторизованы. Статус - {userStatus}</p><h2 className="mb-4">{email} </h2>
                 
-                <button type="submit" class="btn btn-primary" onClick={this.onExit}>Выйти</button>
+                <button type="submit" class="btn btn-primary" onClick={onExit}>Выйти</button>
                  </>                
             )
         }
@@ -102,38 +72,46 @@ class Oauth extends Component {
     
     }
 
-    renderForm() {
-        const {login, password} = this.state;
+    const formErrorElem = () => {
         return (
-            <form onSubmit = {this.onSubmit}>
+            <div className="text-danger mb-3">Неправильная пара логин-пароль</div>
+        )
+    }
+
+    const renderForm = () => {
+        
+        const renderFormError = formError ? formErrorElem() : null;
+         
+        return (
+            <form onSubmit = {onSubmit}>
                 <div className="mb-3">                                            
                     <input type="text" 
                     className="form-control" 
                     placeholder="Введите логин"
                     name="login"
                     value={login}
-                    onChange={this.onValueChange}/>
+                    onChange={(e) => setLogin (e.target.value)}/>
                 </div>
+
                 <div className="mb-3">
                     <input type="password" 
                     className="form-control" 
                     placeholder="Введите пароль"
                     name="password"
                     value={password}
-                    onChange={this.onValueChange}/>
+                    onChange={(e) => setPassword (e.target.value)}/>
                 </div>
+
+                {renderFormError}
+
                 <button type="submit" class="btn btn-primary">Авторизоваться</button>
             </form>          
     )
     }
 
-    render() {
 
-
-        const {token} = this.state;
-
-        const auth = token ? this.renderAuth() : null
-        const form = !token ? this.renderForm() : null;
+        const auth = token ? renderAuth() : null
+        const form = !token ? renderForm() : null;
 
         return (
             <>
@@ -141,7 +119,7 @@ class Oauth extends Component {
              {form}
             </>  
         );
-    }
+
 }
 
 export default Oauth;
