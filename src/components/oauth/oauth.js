@@ -6,6 +6,8 @@ class Oauth extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: '',
+            is_staff: false,
             login: '',
             password: '',
             token: '',
@@ -53,13 +55,17 @@ class Oauth extends Component {
     }
 
     getToken = () => {
-        let token, login;
+        let token, login, email, is_staff;
         if (localStorage.getItem('auth_token')) {
             token = localStorage.getItem('auth_token')
             login = localStorage.getItem('login')
+            email = localStorage.getItem('email')
+            is_staff = localStorage.getItem('is_staff')
             this.setState({
                 token: token,
-                login: login
+                login: login,
+                email: email,
+                is_staff: is_staff
             })
         } 
     }
@@ -76,12 +82,18 @@ class Oauth extends Component {
 
     renderAuth() {
         
-        const {login, token} = this.state;
+        const {email, token, is_staff} = this.state;
+
+        let userStatus = 'Пользователь'
+        if (is_staff) {
+            userStatus = 'Администратор'
+        }
 
         if (token) {
              return (
                  <>
-                <p>Вы авторизованы как</p><h2 className="mb-4">{login}</h2>
+                <p className="small">Вы авторизованы, как {userStatus}</p><h2 className="mb-4">{email} </h2>
+                
                 <button type="submit" class="btn btn-primary" onClick={this.onExit}>Выйти</button>
                  </>                
             )

@@ -18,7 +18,6 @@ const App = () => {
     }
 
     const onArchive = (res) => {
-        
         reload.onChange(true);
         archive.onChange(res);
     }

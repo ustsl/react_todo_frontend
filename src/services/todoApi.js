@@ -60,7 +60,7 @@ class todoApi {
         return res;
     }
 
-    //Получаем лист тасков
+    //Отправка таска
     postTask = async(title, content) => {
         const token = await this.getToken()
         const res = await this.postResource(this._apiBase, title, content, token);

@@ -17,18 +17,20 @@ const Task = (props) => {
     const todoApiObj = new todoApi();
 
     useEffect(() => {
+
         if (props.reload) {
             offset.onChange(0);
         }
         onTodoLoading();
+        console.log(1);
     }, [offset.value, props.reload]);
     
     
     const onTodoListLoaded = (res) => {
         tasks.onChange(res.results);
         loading.onChange(false);
-        next.onChange(res.next == null);
-        previous.onChange(res.previous == null);
+        next.onChange(res.next === null);
+        previous.onChange(res.previous === null);
     }
 
     const onTodoLoading = () => {
@@ -66,7 +68,6 @@ const Task = (props) => {
             content = sliceFunc(content, 250)
             email = sliceFunc(email, 20)
             
-        
             return (
                 <div className="col-lg-4 col-12 pb-2" key={item.pk}>                        
                     <div className="card card200">
