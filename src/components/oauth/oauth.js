@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, } from 'react';
 import oauthApi from '../../services/oauthApi';
 
-const Oauth = () => {
+
+const Oauth = (props) => {
 
     const [email, setEmail] = useState('')
     const [isStaff, setIsStaff] = useState(false)
@@ -25,6 +26,7 @@ const Oauth = () => {
     }    
 
     const errorForm = () => {
+        localStorage.clear()
         setFormError('Неправильная пара логин пароль')
         setLogin('')
         setPassword('')
@@ -40,19 +42,20 @@ const Oauth = () => {
 
     const getToken = () => {
         setToken(localStorage.getItem('auth_token'))
-        setLogin(localStorage.getItem('auth_token'))
+        setLogin(localStorage.getItem('login'))
         setEmail(localStorage.getItem('email'))
         setIsStaff(localStorage.getItem('is_staff'))
+        props.changeStaff(localStorage.getItem('is_staff'))
     }
 
     const onExit = () => {
         localStorage.clear()
+        props.changeStaff(false)
         cleanForm()
     }
 
 
     const renderAuth = () => {
-        
 
         let userStatus = 'Пользователь'
         if (isStaff) {
@@ -72,15 +75,11 @@ const Oauth = () => {
     
     }
 
-    const formErrorElem = () => {
-        return (
-            <div className="text-danger mb-3">Неправильная пара логин-пароль</div>
-        )
-    }
+
 
     const renderForm = () => {
         
-        const renderFormError = formError ? formErrorElem() : null;
+        const renderFormError = formError ? <div className="text-danger mb-3">Неправильная пара логин-пароль</div> : null;
          
         return (
             <form onSubmit = {onSubmit}>

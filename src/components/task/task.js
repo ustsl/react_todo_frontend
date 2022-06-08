@@ -21,8 +21,8 @@ const Task = (props) => {
         if (props.reload) {
             offset.onChange(0);
         }
+
         onTodoLoading();
-        console.log(1);
     }, [offset.value, props.reload]);
     
     
@@ -41,6 +41,14 @@ const Task = (props) => {
         .catch(onError)
     }
 
+    const onIsDone = (pk, title, content, isDone) => {
+        loading.onChange(true);
+        todoApiObj.putTask(pk, title, content, isDone)
+        .then(props.onLoading(true))
+        .catch(onError)
+    }
+
+
     const onPagination = (newOffset) => {
         offset.onChange(offset.value + newOffset);
     }
@@ -49,11 +57,28 @@ const Task = (props) => {
         error.onChange(true);
     }
 
+    const isStaffElem = (pk, title, content, archive) => {
+        let textContent = 'Перенести в выполненные'
+        if (archive) {
+            textContent = 'Разархивировать'
+        }
+        
+        return (
+        <div className="card-footer">
+            <button type="submit" class="btn btn-light btn-sm" 
+            onClick={() =>onIsDone(pk, title, content, !archive)}>
+                {textContent}
+                </button>
+        </div>
+        )
+    }
+
     const renderItems = (arr) => {
 
         const items =  arr.map((item) => {  
 
-            let content = item.content,
+            let pk = item.pk,
+                content = item.content,
                 title = item.title,
                 email = item.get_mail; 
 
@@ -67,6 +92,8 @@ const Task = (props) => {
             title = sliceFunc(title, 15)
             content = sliceFunc(content, 250)
             email = sliceFunc(email, 20)
+
+           const isStaff = (props.isStaff) ? isStaffElem(pk, title, content, props.archive) : null;
             
             return (
                 <div className="col-lg-4 col-12 pb-2" key={item.pk}>                        
@@ -79,6 +106,9 @@ const Task = (props) => {
                             <p className="card-text">{content}</p>
                            
                         </div>
+
+                        {isStaff}
+                        
                     </div>                        
                 </div>
             )

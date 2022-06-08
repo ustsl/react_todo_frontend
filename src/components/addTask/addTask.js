@@ -1,49 +1,41 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import todoApi from '../../services/todoApi';
 
-class Form extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: '',
-            content: '',
-        }
-    }
+const Form = (props) => {
 
-    todoApiObj = new todoApi();
+    const [title, setTitle] = useState('')
+    const [content, setContent] = useState('')
+    const [error, setError] = useState(false)
 
-    onValueChange = (e) => {
-        this.setState({
-            [e.target.name]:e.target.value
-        })
+    const todoApiObj = new todoApi();
 
-    }
-
-    cleanForm = () => {
-        this.setState({
-            title: '',
-            content: '',
-        })
+    const cleanForm = () => {
+        setTitle('')
+        setContent('')
+        setError(false)
     }
     
-    onSubmit = (e) => {
+    const onSubmit = (e) => {
         e.preventDefault();       
-        this.todoApiObj.postTask(this.state.title, this.state.content)
-        .then(this.cleanForm())
-        .then(this.props.onLoading(true))        
-        .catch(this.onError)
+        todoApiObj.postTask(title, content)
+        .then(cleanForm())
+        .then(props.onLoading(true))        
+        .catch(onError)
 
     }
 
-    render() {
+    const onError = () => {
+        setError(true);
+    }    
 
-        const {title, content} = this.state;
+    const errorBlock  = error ? <div className="pb-3">Ошибка</div> : null;
 
-        return (
+
+    return (
             
             <form
-            onSubmit = {this.onSubmit}>
+            onSubmit = {onSubmit}>
                 <div className="mb-3">
                                         <input type="text"
                         className="form-control"
@@ -51,7 +43,7 @@ class Form extends Component {
                         placeholder="Введите тайтл таска"
                         name="title"
                         value={title}
-                        onChange={this.onValueChange} />
+                        onChange={(e) => setTitle (e.target.value)} />
                 </div>
                 <div className="mb-3">
                     
@@ -61,12 +53,12 @@ class Form extends Component {
                         rows="2"
                         name="content"
                         value={content}                        
-                        onChange={this.onValueChange}></textarea>
+                        onChange={(e) => setContent (e.target.value)}></textarea>
                 </div>
+                {errorBlock}
                 <button className="btn btn-success">Опубликовать задачу</button>
             </form>
         );
-    }
 }
 
 export default Form;

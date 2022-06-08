@@ -1,6 +1,6 @@
 class oauthApi {
-    _apiBaseToken = 'https://todobackend.ustsl.ru/auth/token/login';
-    _apiBaseGetUser = 'https://todobackend.ustsl.ru/api/v1/get_user';
+    _apiBaseToken = 'https://todobackend.ustsl.ru/auth/token/login/';
+    _apiBaseGetUser = 'https://todobackend.ustsl.ru/api/v1/get_user/';
     _apiKey = '';
 
     getToken = async(url, login, password) => {
@@ -22,7 +22,6 @@ class oauthApi {
         }
         return await res.json();
     }
-
 
     //Вынесено в отдельный метод
     getUser = async(url, token) => {

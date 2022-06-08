@@ -1,7 +1,7 @@
 //Сервис работы с бэкендом
 
 class todoApi {
-    _apiBase = 'https://todobackend.ustsl.ru/api/v1';
+    _apiBase = 'https://todobackend.ustsl.ru/api/v1/';
     _apiKey = '';
     _limit = 3;
 
@@ -23,7 +23,7 @@ class todoApi {
         return await res.json();
     }
 
-    postResource = async(url, title, content, token) => {
+    postResource = async(url, title, content, isDone, token, method = 'POST') => {
 
         let headers = {
             'Content-type': 'application/json',
@@ -35,10 +35,11 @@ class todoApi {
         }
 
         const res = await fetch(url, {
-            method: 'POST',
+            method: method,
             body: JSON.stringify({
                 title: title,
-                content: content
+                content: content,
+                is_done: isDone
             }),
             headers: headers
         });
@@ -54,7 +55,7 @@ class todoApi {
     getTaskList = async(offset, archive) => {
         let link = this._apiBase;
         if (archive) {
-            link = this._apiBase + '/archive'
+            link = this._apiBase + '/archive/'
         }
         const res = await this.getResource(link, offset);
         return res;
@@ -62,8 +63,20 @@ class todoApi {
 
     //Отправка таска
     postTask = async(title, content) => {
-        const token = await this.getToken()
-        const res = await this.postResource(this._apiBase, title, content, token);
+        const token = await this.getToken(),
+            isDone = false;
+        const res = await this.postResource(this._apiBase, title, content, isDone, token);
+        return res;
+    }
+
+    //Отправка таска
+    putTask = async(pk, title, content, isDone) => {
+
+        const token = await this.getToken(),
+            url = `${this._apiBase}${pk}/`,
+            method = 'PUT';
+        const res = await this.postResource(url, title, content, isDone, token, method);
+        console.log(res)
         return res;
     }
 

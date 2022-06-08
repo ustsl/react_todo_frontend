@@ -12,6 +12,8 @@ const App = () => {
     
     const archive = useGlobalSetState(false);
     const reload = useGlobalSetState(false);
+    const isStaff = useGlobalSetState(false);
+
 
     const onLoading = (res) => {
         reload.onChange(res);
@@ -22,6 +24,12 @@ const App = () => {
         archive.onChange(res);
     }
 
+    const changeStaff = (res) => {
+        isStaff.onChange(res);
+        reload.onChange(true)
+    }
+
+
     return (
             <div className="container">
                 <Nav onArchive={onArchive}/>
@@ -31,7 +39,8 @@ const App = () => {
                                 <Task 
                                 reload={reload.value}
                                 archive={archive.value}
-                                onLoading={onLoading}/>                               
+                                onLoading={onLoading}
+                                isStaff={isStaff.value}/>                               
                         </div>
                         <div className="col">
                             <div className="card mb-4">
@@ -47,7 +56,7 @@ const App = () => {
                                     Авторизация
                                 </div>
                                 <div className="card-body">
-                                    <Oauth/>
+                                    <Oauth changeStaff={changeStaff}/>
                                 </div> 
                             </div>    
                         </div>             
