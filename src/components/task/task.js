@@ -35,7 +35,7 @@ const Task = (props) => {
 
     const onTodoLoading = () => {
         loading.onChange(true);
-        todoApiObj.getTaskList(offset.value, props.archive, props.olderTasks)
+        todoApiObj.getTaskList(offset.value, props.archive, props.olderTasks, props.searchQuery)
         .then(onTodoListLoaded)
         .then(props.onLoading(false))
         .catch(onError)
@@ -129,18 +129,28 @@ const Task = (props) => {
                 </div>
             )
         });
+        if (items.length > 0) {
+            return (
+                <div className="row">
+                  {items}
+                </div>
+            )
+        }
 
-        return (
-            <div className="row">
-              {items}
-            </div>
+        return  (
+            <h2> Тасков не найдено</h2>
         )
+           
+        
+        
     }
-   
+        
         const items = renderItems(tasks.value);
         const spinner = loading.value ? <Spinner/> : null;
         const error = errorMessage.value ? <Error/> : null;
-        const content = !(loading.value || error) ? items : null;
+        const content = !(loading.value || error )? items : null;
+
+
 
         return (                
                 <>

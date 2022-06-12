@@ -6,12 +6,12 @@ class todoApi {
     _limit = 3;
 
     //Вынесено в отдельный метод
-    getResource = async(url, offset = 0, setArchive = 'False', setSorted = '-time_create') => {
+    getResource = async(url, offset = 0, setArchive = 'False', setSorted = '-time_create', searchQuery = '') => {
         const headers = {
             'Content-type': 'application/json',
         }
 
-        const res = await fetch(`${url}?limit=${this._limit}&offset=${offset}&is_done=${setArchive}&sorting=${setSorted}`, {
+        const res = await fetch(`${url}?limit=${this._limit}&offset=${offset}&is_done=${setArchive}&sorting=${setSorted}&get_mail=${searchQuery}`, {
             method: 'GET',
             headers: headers
         });
@@ -52,7 +52,7 @@ class todoApi {
     }
 
     //Получаем лист тасков
-    getTaskList = async(offset, archive, olderTasks) => {
+    getTaskList = async(offset, archive, olderTasks, searchQuery) => {
         console.log(olderTasks)
         let setArchive = 'False'
         let setSorted = '-time_create'
@@ -62,7 +62,7 @@ class todoApi {
         if (olderTasks) {
             setSorted = 'time_create'
         }
-        const res = await this.getResource(this._apiBase, offset, setArchive, setSorted);
+        const res = await this.getResource(this._apiBase, offset, setArchive, setSorted, searchQuery);
         return res;
     }
 

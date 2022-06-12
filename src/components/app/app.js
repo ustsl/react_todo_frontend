@@ -12,9 +12,13 @@ const App = () => {
         archive = useGlobalSetState(false),
         olderTasks = useGlobalSetState(false),
         reload = useGlobalSetState(false),
-        isStaff = useGlobalSetState(false);
+        isStaff = useGlobalSetState(false),
+        searchQuery = useGlobalSetState('');
 
-
+    const onSearch = (res) => {
+        reload.onChange(true);
+        searchQuery.onChange(res)
+    }
 
     const onLoading = (res) => {
         reload.onChange(res);
@@ -41,6 +45,7 @@ const App = () => {
                 <Nav 
                 onArchive={onArchive}
                 onOlderTasks={onOlderTasks}
+                onSearch={onSearch}
                 />
                 <div className="container my-5">
                     <div className="row">
@@ -50,7 +55,8 @@ const App = () => {
                                 archive={archive.value}
                                 olderTasks={olderTasks.value}
                                 onLoading={onLoading}
-                                isStaff={isStaff.value}/>                               
+                                isStaff={isStaff.value}
+                                searchQuery={searchQuery.value}/>                               
                         </div>
                         <div className="col">
                             <div className="card mb-4">
