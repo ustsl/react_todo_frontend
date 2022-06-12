@@ -35,7 +35,7 @@ const Task = (props) => {
 
     const onTodoLoading = () => {
         loading.onChange(true);
-        todoApiObj.getTaskList(offset.value, props.archive)
+        todoApiObj.getTaskList(offset.value, props.archive, props.olderTasks)
         .then(onTodoListLoaded)
         .then(props.onLoading(false))
         .catch(onError)
@@ -44,6 +44,13 @@ const Task = (props) => {
     const onIsDone = (pk, title, content, isDone) => {
         loading.onChange(true);
         todoApiObj.putTask(pk, title, content, isDone)
+        .then(props.onLoading(true))
+        .catch(onError)
+    }
+
+    const onIsDeleted = (pk) => {
+        loading.onChange(true);
+        todoApiObj.delTask(pk)
         .then(props.onLoading(true))
         .catch(onError)
     }
@@ -58,17 +65,26 @@ const Task = (props) => {
     }
 
     const isStaffElem = (pk, title, content, archive) => {
-        let textContent = 'Перенести в выполненные'
+        let textContent = 'Архивировать'
         if (archive) {
-            textContent = 'Разархивировать'
+            textContent = 'Вернуть задачу'
         }
+        
         
         return (
         <div className="card-footer">
-            <button type="submit" class="btn btn-light btn-sm" 
+            <button type="submit" className="btn btn-light btn-sm" 
             onClick={() =>onIsDone(pk, title, content, !archive)}>
                 {textContent}
-                </button>
+            </button>
+
+
+            <button type="submit" className="btn btn-light btn-sm " 
+            onClick={() =>onIsDeleted(pk)}>
+                <span className="text-danger">Удалить</span>
+            </button>
+            
+          
         </div>
         )
     }

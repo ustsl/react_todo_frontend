@@ -7,8 +7,10 @@ function switchValue (firstObj, secondObj) {
 
 const Nav = (props) => {
 
-    const activeStyle = useGlobalSetState('nav-link active');
-    const archiveStyle = useGlobalSetState('nav-link');
+    const   activeStyle = useGlobalSetState('nav-link active'),
+            archiveStyle = useGlobalSetState('nav-link'),
+            newTasksStyle = useGlobalSetState('nav-link active'),
+            oldTasksStyle = useGlobalSetState('nav-link')
   
     const activeTasks = (e) => {
         e.preventDefault();   
@@ -20,6 +22,18 @@ const Nav = (props) => {
         e.preventDefault();   
         switchValue(archiveStyle, activeStyle)
         props.onArchive(true);
+    }
+
+    const newTasks = (e) => {
+        e.preventDefault();   
+        switchValue(newTasksStyle, oldTasksStyle)
+        props.onOlderTasks(false);
+    }
+
+    const oldTasks = (e) => {
+        e.preventDefault();   
+        switchValue(oldTasksStyle, newTasksStyle)
+        props.onOlderTasks(true);
     }
 
     return (                
@@ -35,11 +49,19 @@ const Nav = (props) => {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
                             <a className={activeStyle.value}
-                            aria-current="page" href="/" onClick={activeTasks}>Актуальные задачи</a>
+                            aria-current="page" href="#" onClick={activeTasks}>Актуальные задачи</a>
                         </li>
                         <li className="nav-item">
-                            <a className={archiveStyle.value} href="/" onClick={archiveTasks}>Выполненные задачи</a>
-                        </li>                        
+                            <a className={archiveStyle.value} href="#" onClick={archiveTasks}>Выполненные задачи</a>
+                        </li>
+
+                         <li className="nav-item">
+                            <a className={newTasksStyle.value} href="#" onClick={newTasks}>Сначала новые</a>
+                        </li>                  
+
+                         <li className="nav-item">
+                            <a className={oldTasksStyle.value} href="#" onClick={oldTasks}>Сначала старые</a>
+                        </li>                                          
                     </ul>
                 </div>
             </div>

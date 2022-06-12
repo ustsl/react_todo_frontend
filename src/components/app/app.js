@@ -1,18 +1,19 @@
 import './app.css';
 
 import useGlobalSetState from '../../hooks/abstractState.hook'
-
 import Task from '../task/task';
 import Form from '../addTask/addTask';
 import Oauth from '../oauth/oauth';
 import Nav from '../navigation/nav';
 
-
 const App = () => {
     
-    const archive = useGlobalSetState(false);
-    const reload = useGlobalSetState(false);
-    const isStaff = useGlobalSetState(false);
+    const 
+        archive = useGlobalSetState(false),
+        olderTasks = useGlobalSetState(false),
+        reload = useGlobalSetState(false),
+        isStaff = useGlobalSetState(false);
+
 
 
     const onLoading = (res) => {
@@ -24,6 +25,11 @@ const App = () => {
         archive.onChange(res);
     }
 
+    const onOlderTasks = (res) => {
+        reload.onChange(true);
+        olderTasks.onChange(res);
+    }
+
     const changeStaff = (res) => {
         isStaff.onChange(res);
         reload.onChange(true)
@@ -32,13 +38,17 @@ const App = () => {
 
     return (
             <div className="container">
-                <Nav onArchive={onArchive}/>
+                <Nav 
+                onArchive={onArchive}
+                onOlderTasks={onOlderTasks}
+                />
                 <div className="container my-5">
                     <div className="row">
                         <div className="col-12 col-lg-7">                           
                                 <Task 
                                 reload={reload.value}
                                 archive={archive.value}
+                                olderTasks={olderTasks.value}
                                 onLoading={onLoading}
                                 isStaff={isStaff.value}/>                               
                         </div>

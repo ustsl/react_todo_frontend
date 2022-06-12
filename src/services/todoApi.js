@@ -6,12 +6,12 @@ class todoApi {
     _limit = 3;
 
     //Вынесено в отдельный метод
-    getResource = async(url, offset = 0) => {
+    getResource = async(url, offset = 0, setArchive = 'False', setSorted = '-time_create') => {
         const headers = {
             'Content-type': 'application/json',
         }
 
-        const res = await fetch(`${url}?limit=${this._limit}&offset=${offset}`, {
+        const res = await fetch(`${url}?limit=${this._limit}&offset=${offset}&is_done=${setArchive}&sorting=${setSorted}`, {
             method: 'GET',
             headers: headers
         });
@@ -23,7 +23,7 @@ class todoApi {
         return await res.json();
     }
 
-    postResource = async(url, title, content, isDone, token, method = 'POST') => {
+    postResource = async(url, title = null, content = null, isDone = null, token, method = 'POST') => {
 
         let headers = {
             'Content-type': 'application/json',
@@ -52,12 +52,17 @@ class todoApi {
     }
 
     //Получаем лист тасков
-    getTaskList = async(offset, archive) => {
-        let link = this._apiBase;
+    getTaskList = async(offset, archive, olderTasks) => {
+        console.log(olderTasks)
+        let setArchive = 'False'
+        let setSorted = '-time_create'
         if (archive) {
-            link = this._apiBase + '/archive/'
+            setArchive = 'True'
         }
-        const res = await this.getResource(link, offset);
+        if (olderTasks) {
+            setSorted = 'time_create'
+        }
+        const res = await this.getResource(this._apiBase, offset, setArchive, setSorted);
         return res;
     }
 
@@ -76,9 +81,20 @@ class todoApi {
             url = `${this._apiBase}${pk}/`,
             method = 'PUT';
         const res = await this.postResource(url, title, content, isDone, token, method);
-        console.log(res)
         return res;
     }
+
+    //Удаление таска
+    delTask = async(pk) => {
+        const
+            token = await this.getToken(),
+            url = `${this._apiBase}${pk}/delete`,
+            method = 'PUT';
+
+        const res = await this.postResource(url, null, null, null, token, method);
+        return res;
+    }
+
 
     getToken = async() => {
 
